@@ -37,6 +37,7 @@ node_modules/
 out/
 in/
 out-monoliths/
+.idea
 
 ### Secrets ###
 .env
