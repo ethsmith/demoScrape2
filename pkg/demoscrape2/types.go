@@ -258,11 +258,11 @@ type playerStats struct {
 	WinPointsNormalizer int     `json:"winPointsNormalizer"`
 
 	//"flags"
-	Health             int `json:"health"`
-	TradeList          map[uint64]int
-	MostRecentFlasher  uint64  `json:"mostRecentFlasher"`
-	MostRecentFlashVal float64 `json:"mostRecentFlashVal"`
-	DamageList         map[uint64]int
+	Health             int            `json:"health"`
+	TradeList          map[uint64]int `json:"tradeList"`
+	MostRecentFlasher  uint64         `json:"mostRecentFlasher"`
+	MostRecentFlashVal float64        `json:"mostRecentFlashVal"`
+	DamageList         map[uint64]int `json:"damageList"`
 }
 
 type Accolades struct {
