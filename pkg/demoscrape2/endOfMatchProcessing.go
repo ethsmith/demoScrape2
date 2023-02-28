@@ -462,6 +462,16 @@ func calculateSidedStats(game *Game) {
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
+		if player.Deaths == 0 {
+			player.DeathPlacement = 0
+			player.Tr = .50
+		}
+		if player.TDeaths == 0 {
+			player.TADP = 0
+		}
+		if player.CtDeaths == 0 {
+			player.CtADP = 0
+		}
 	}
 	for _, player := range game.TPlayerStats {
 		player.Atd = player.TicksAlive / player.Rounds / game.TickRate
@@ -478,6 +488,16 @@ func calculateSidedStats(game *Game) {
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
+		if player.Deaths == 0 {
+			player.DeathPlacement = 0
+			player.Tr = .50
+		}
+		if player.TDeaths == 0 {
+			player.TADP = 0
+		}
+		if player.CtDeaths == 0 {
+			player.CtADP = 0
+		}
 	}
 
 	return
