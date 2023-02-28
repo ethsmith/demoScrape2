@@ -229,6 +229,9 @@ func calculateDerivedFields(game *Game) {
 		player.CtADP = player.CtADP / float64(player.CtDeaths)
 		player.Rws = player.Rws / float64(player.Rounds)
 
+		if player.ImpactPoints == 0 {
+			player.Iiwr = 0
+		}
 		if player.Deaths == 0 {
 			player.DeathPlacement = 0
 			player.Tr = .50
@@ -462,6 +465,9 @@ func calculateSidedStats(game *Game) {
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
+		if player.ImpactPoints == 0 {
+			player.Iiwr = 0
+		}
 		if player.Deaths == 0 {
 			player.DeathPlacement = 0
 			player.Tr = .50
@@ -488,6 +494,9 @@ func calculateSidedStats(game *Game) {
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
+		if player.ImpactPoints == 0 {
+			player.Iiwr = 0
+		}
 		if player.Deaths == 0 {
 			player.DeathPlacement = 0
 			player.Tr = .50
