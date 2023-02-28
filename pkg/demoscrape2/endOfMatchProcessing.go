@@ -2,6 +2,7 @@ package demoscrape2
 
 import (
 	log "github.com/sirupsen/logrus"
+	"math"
 )
 
 func endOfMatchProcessing(game *Game) {
@@ -229,6 +230,9 @@ func calculateDerivedFields(game *Game) {
 		player.CtADP = player.CtADP / float64(player.CtDeaths)
 		player.Rws = player.Rws / float64(player.Rounds)
 
+		if player.Rws == math.NaN() {
+			player.Rws = 0
+		}
 		if player.ImpactPoints == 0 {
 			player.Iiwr = 0
 		}
@@ -465,6 +469,9 @@ func calculateSidedStats(game *Game) {
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
+		if player.Rws == math.NaN() {
+			player.Rws = 0
+		}
 		if player.ImpactPoints == 0 {
 			player.Iiwr = 0
 		}
@@ -494,6 +501,9 @@ func calculateSidedStats(game *Game) {
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
+		if player.Rws == math.NaN() {
+			player.Rws = 0
+		}
 		if player.ImpactPoints == 0 {
 			player.Iiwr = 0
 		}
