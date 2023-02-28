@@ -164,6 +164,9 @@ func endOfMatchProcessing(game *Game) {
 					} else { //round ended due to damage/time
 						player.Rws = 100 * (float64(player.Damage) / float64(game.Rounds[i].WinTeamDmg))
 					}
+					if math.IsNaN(player.Rws) {
+						player.Rws = 0.0
+					}
 					game.TotalPlayerStats[steam].Rws += player.Rws
 				}
 			}
@@ -440,6 +443,9 @@ func calculateSidedStats(game *Game) {
 					sidedStats[steam].Wlp += player.WinPoints
 				}
 
+				if math.IsNaN(player.Rws) {
+					player.Rws = 0.0
+				}
 				sidedStats[steam].Rws += player.Rws
 
 				if player.Side == 2 {
