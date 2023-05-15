@@ -28,10 +28,10 @@ func endOfMatchProcessing(game *Game) {
 				}
 				game.TotalTeamStats[teamName].Pistols += team.Pistols
 				game.TotalTeamStats[teamName].PistolsW += team.PistolsW
-				game.TotalTeamStats[teamName]._4v5s += team._4v5s
-				game.TotalTeamStats[teamName]._4v5w += team._4v5w
-				game.TotalTeamStats[teamName]._5v4s += team._5v4s
-				game.TotalTeamStats[teamName]._5v4w += team._5v4w
+				game.TotalTeamStats[teamName].FourVFiveS += team.FourVFiveS
+				game.TotalTeamStats[teamName].FourVFiveW += team.FourVFiveW
+				game.TotalTeamStats[teamName].FiveVFourS += team.FiveVFourS
+				game.TotalTeamStats[teamName].FiveVFourW += team.FiveVFourW
 				game.TotalTeamStats[teamName].Saves += team.Saves
 				game.TotalTeamStats[teamName].Clutches += team.Clutches
 				game.TotalTeamStats[teamName].CtR += team.CtR
@@ -63,10 +63,10 @@ func endOfMatchProcessing(game *Game) {
 				game.TotalPlayerStats[steam].Cl_3 += player.Cl_3
 				game.TotalPlayerStats[steam].Cl_4 += player.Cl_4
 				game.TotalPlayerStats[steam].Cl_5 += player.Cl_5
-				game.TotalPlayerStats[steam]._2k += player._2k
-				game.TotalPlayerStats[steam]._3k += player._3k
-				game.TotalPlayerStats[steam]._4k += player._4k
-				game.TotalPlayerStats[steam]._5k += player._5k
+				game.TotalPlayerStats[steam]TwoK += playerTwoK
+				game.TotalPlayerStats[steam]ThreeK += playerThreeK
+				game.TotalPlayerStats[steam]FourK += playerFourK
+				game.TotalPlayerStats[steam]FiveK += playerFiveK
 				game.TotalPlayerStats[steam].NadeDmg += player.NadeDmg
 				game.TotalPlayerStats[steam].InfernoDmg += player.InfernoDmg
 				game.TotalPlayerStats[steam].UtilDmg += player.UtilDmg
@@ -404,10 +404,10 @@ func calculateSidedStats(game *Game) {
 				sidedStats[steam].Cl_3 += player.Cl_3
 				sidedStats[steam].Cl_4 += player.Cl_4
 				sidedStats[steam].Cl_5 += player.Cl_5
-				sidedStats[steam]._2k += player._2k
-				sidedStats[steam]._3k += player._3k
-				sidedStats[steam]._4k += player._4k
-				sidedStats[steam]._5k += player._5k
+				sidedStats[steam]TwoK += playerTwoK
+				sidedStats[steam]ThreeK += playerThreeK
+				sidedStats[steam]FourK += playerFourK
+				sidedStats[steam]FiveK += playerFiveK
 				sidedStats[steam].NadeDmg += player.NadeDmg
 				sidedStats[steam].InfernoDmg += player.InfernoDmg
 				sidedStats[steam].UtilDmg += player.UtilDmg
