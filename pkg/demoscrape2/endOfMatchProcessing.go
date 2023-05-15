@@ -28,10 +28,10 @@ func endOfMatchProcessing(game *Game) {
 				}
 				game.TotalTeamStats[teamName].Pistols += team.Pistols
 				game.TotalTeamStats[teamName].PistolsW += team.PistolsW
-				game.TotalTeamStats[teamName]._4v5s += team._4v5s
-				game.TotalTeamStats[teamName]._4v5w += team._4v5w
-				game.TotalTeamStats[teamName]._5v4s += team._5v4s
-				game.TotalTeamStats[teamName]._5v4w += team._5v4w
+				game.TotalTeamStats[teamName].FourVFiveS += team.FourVFiveS
+				game.TotalTeamStats[teamName].FourVFiveW += team.FourVFiveW
+				game.TotalTeamStats[teamName].FiveVFourS += team.FiveVFourS
+				game.TotalTeamStats[teamName].FiveVFourW += team.FiveVFourW
 				game.TotalTeamStats[teamName].Saves += team.Saves
 				game.TotalTeamStats[teamName].Clutches += team.Clutches
 				game.TotalTeamStats[teamName].CtR += team.CtR

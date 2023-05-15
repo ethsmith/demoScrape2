@@ -245,10 +245,10 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			if game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].Pistols == 1 {
 				game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].PistolsW = 1
 			}
-			if game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName]._4v5s == 1 {
-				game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName]._4v5w = 1
-			} else if game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName]._5v4s == 1 {
-				game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName]._5v4w = 1
+			if game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].FourVFiveS == 1 {
+				game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].FourVFiveW = 1
+			} else if game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].FiveVFourS == 1 {
+				game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].FiveVFourW = 1
 			}
 			if game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].TR == 1 {
 				game.PotentialRound.TeamStats[game.PotentialRound.WinnerClanName].TRW = 1
@@ -762,10 +762,10 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 				if game.Flags.OpeningKill && game.PotentialRound.InitCTerroristCount+game.PotentialRound.InitTerroristCount == 10 {
 					//the 10th player died
 					_4v5Team := pS[e.Victim.SteamID64].TeamClanName
-					game.PotentialRound.TeamStats[_4v5Team]._4v5s = 1
+					game.PotentialRound.TeamStats[_4v5Team].FourVFiveS = 1
 					for teamName, team := range game.PotentialRound.TeamStats {
 						if teamName != _4v5Team {
-							team._5v4s = 1
+							team.FiveVFourS = 1
 						}
 					}
 				}

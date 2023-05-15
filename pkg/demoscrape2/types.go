@@ -67,8 +67,8 @@ type teamStats struct {
 	CtWinPoints    float64 `json:"ctWinPoints"`
 	TImpactPoints  float64 `json:"TImpactPoints"`
 	CtImpactPoints float64 `json:"ctImpactPoints"`
-	FourVFivesW    int     `json:"4V5W"`
-	FourVFivesS    int     `json:"4V5S"`
+	FourVFiveW    int      `json:"4V5W"`
+	FourVFiveS    int      `json:"4V5S"`
 	FiveVFourW     int     `json:"5V4W"`
 	FiveVFourS     int     `json:"5V4S"`
 	Pistols        int     `json:"pistols"`
