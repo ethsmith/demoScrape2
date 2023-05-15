@@ -166,10 +166,10 @@ type playerStats struct {
 	Cl_3                int     `json:"cl_3"`
 	Cl_4                int     `json:"cl_4"`
 	Cl_5                int     `json:"cl_5"`
-	_2k                 int     `json:"_2K"`
-	_3k                 int     `json:"_3K"`
-	_4k                 int     `json:"_4K"`
-	_5k                 int     `json:"_5K"`
+	TwoK                int     `json:"_2K"`
+	ThreeK              int     `json:"_3K"`
+	FourK               int     `json:"_4K"`
+	FiveK               int     `json:"_5K"`
 	NadeDmg             int     `json:"nadeDmg"`
 	InfernoDmg          int     `json:"infernoDmg"`
 	UtilDmg             int     `json:"utilDmg"`

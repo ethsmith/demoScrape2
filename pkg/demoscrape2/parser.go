@@ -306,13 +306,13 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 
 				switch player.Kills {
 				case 2:
-					player._2k = 1
+					playerTwoK = 1
 				case 3:
-					player._3k = 1
+					playerThreeK = 1
 				case 4:
-					player._4k = 1
+					playerFourK = 1
 				case 5:
-					player._5k = 1
+					playerFiveK = 1
 				}
 
 				if player.ImpactPoints > highestImpactPoints {
