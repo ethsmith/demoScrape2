@@ -67,10 +67,10 @@ type teamStats struct {
 	CtWinPoints    float64 `json:"ctWinPoints"`
 	TImpactPoints  float64 `json:"TImpactPoints"`
 	CtImpactPoints float64 `json:"ctImpactPoints"`
-	FourVFiveW    int      `json:"4V5W"`
-	FourVFiveS    int      `json:"4V5S"`
-	FiveVFourW     int     `json:"5V4W"`
-	FiveVFourS     int     `json:"5V4S"`
+	FourVFiveW    int      `json:"fourVFiveW"`
+	FourVFiveS    int      `json:"fourVFiveS"`
+	FiveVFourW     int     `json:"fiveVFourW"`
+	FiveVFourS     int     `json:"fiveVFourS"`
 	Pistols        int     `json:"pistols"`
 	PistolsW       int     `json:"pistolsW"`
 	Saves          int     `json:"saves"`
@@ -166,10 +166,10 @@ type playerStats struct {
 	Cl_3                int     `json:"cl_3"`
 	Cl_4                int     `json:"cl_4"`
 	Cl_5                int     `json:"cl_5"`
-	TwoK                int     `json:"2K"`
-	ThreeK              int     `json:"3K"`
-	FourK               int     `json:"4K"`
-	FiveK               int     `json:"5K"`
+	TwoK                int     `json:"twoK"`
+	ThreeK              int     `json:"threeK"`
+	FourK               int     `json:"fourK"`
+	FiveK               int     `json:"fiveK"`
 	NadeDmg             int     `json:"nadeDmg"`
 	InfernoDmg          int     `json:"infernoDmg"`
 	UtilDmg             int     `json:"utilDmg"`
