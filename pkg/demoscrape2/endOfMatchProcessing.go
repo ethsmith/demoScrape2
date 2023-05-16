@@ -63,10 +63,10 @@ func endOfMatchProcessing(game *Game) {
 				game.TotalPlayerStats[steam].Cl_3 += player.Cl_3
 				game.TotalPlayerStats[steam].Cl_4 += player.Cl_4
 				game.TotalPlayerStats[steam].Cl_5 += player.Cl_5
-				game.TotalPlayerStats[steam]TwoK += player.TwoK
-				game.TotalPlayerStats[steam]ThreeK += player.ThreeK
-				game.TotalPlayerStats[steam]FourK += player.FourK
-				game.TotalPlayerStats[steam]FiveK += player.FiveK
+				game.TotalPlayerStats[steam].TwoK += player.TwoK
+				game.TotalPlayerStats[steam].ThreeK += player.ThreeK
+				game.TotalPlayerStats[steam].FourK += player.FourK
+				game.TotalPlayerStats[steam].FiveK += player.FiveK
 				game.TotalPlayerStats[steam].NadeDmg += player.NadeDmg
 				game.TotalPlayerStats[steam].InfernoDmg += player.InfernoDmg
 				game.TotalPlayerStats[steam].UtilDmg += player.UtilDmg
@@ -92,6 +92,7 @@ func endOfMatchProcessing(game *Game) {
 				game.TotalPlayerStats[steam].Rwk += player.Rwk
 				game.TotalPlayerStats[steam].Mip += player.Mip
 				game.TotalPlayerStats[steam].Eac += player.Eac
+				game.TotalPlayerStats[steam].Side = 4
 
 				if player.IsBot {
 					game.TotalPlayerStats[steam].IsBot = true
@@ -404,10 +405,10 @@ func calculateSidedStats(game *Game) {
 				sidedStats[steam].Cl_3 += player.Cl_3
 				sidedStats[steam].Cl_4 += player.Cl_4
 				sidedStats[steam].Cl_5 += player.Cl_5
-				sidedStats[steam]TwoK += player.TwoK
-				sidedStats[steam]ThreeK += player.ThreeK
-				sidedStats[steam]FourK += player.FourK
-				sidedStats[steam]FiveK += player.FiveK
+				sidedStats[steam].TwoK += player.TwoK
+				sidedStats[steam].ThreeK += player.ThreeK
+				sidedStats[steam].FourK += player.FourK
+				sidedStats[steam].FiveK += player.FiveK
 				sidedStats[steam].NadeDmg += player.NadeDmg
 				sidedStats[steam].InfernoDmg += player.InfernoDmg
 				sidedStats[steam].UtilDmg += player.UtilDmg
@@ -433,6 +434,7 @@ func calculateSidedStats(game *Game) {
 				sidedStats[steam].Rwk += player.Rwk
 				sidedStats[steam].Mip += player.Mip
 				sidedStats[steam].Eac += player.Eac
+				sidedStats[steam].Side = player.Side
 
 				if player.IsBot {
 					sidedStats[steam].IsBot = true
