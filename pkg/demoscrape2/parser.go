@@ -165,8 +165,8 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 
 	initTeamPlayer := func(team *common.TeamState, currRoundObj *round) {
 		for _, teamMember := range team.Members() {
-			player := &playerStats{Name: teamMember.Name, SteamID: teamMember.SteamID64, IsBot: teamMember.IsBot, Side: int(team.Team()), TeamENUM: team.ID(), TeamClanName: validateTeamName(game, team.ClanName(), team.Team()), Health: 100, TradeList: make(map[uint64]int), DamageList: make(map[uint64]int)}
-			currRoundObj.PlayerStats[player.SteamID] = player
+			player := &playerStats{Name: teamMember.Name, SteamID: strconv.FormatUint(teamMember.SteamID64, 10), IsBot: teamMember.IsBot, Side: int(team.Team()), TeamENUM: team.ID(), TeamClanName: validateTeamName(game, team.ClanName(), team.Team()), Health: 100, TradeList: make(map[uint64]int), DamageList: make(map[uint64]int)}
+			currRoundObj.PlayerStats[teamMember.SteamID64] = player
 		}
 	}
 
@@ -300,9 +300,10 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 						game.PotentialRound.TeamStats[player.TeamClanName].Saves = 1
 					}
 				}
-				game.PotentialRound.PlayerStats[player.SteamID].ImpactPoints += player.KillPoints
-				game.PotentialRound.PlayerStats[player.SteamID].ImpactPoints += float64(player.Damage) / float64(250)
-				game.PotentialRound.PlayerStats[player.SteamID].ImpactPoints += multiKillBonus[player.Kills]
+				steamId64, _ := strconv.ParseUint(player.SteamID, 10, 64)
+				game.PotentialRound.PlayerStats[steamId64].ImpactPoints += player.KillPoints
+				game.PotentialRound.PlayerStats[steamId64].ImpactPoints += float64(player.Damage) / float64(250)
+				game.PotentialRound.PlayerStats[steamId64].ImpactPoints += multiKillBonus[player.Kills]
 
 				switch player.Kills {
 				case 2:
@@ -347,13 +348,15 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 				if player.Side == 2 {
 					if player.LurkerBlips > susLurkBlips {
 						susLurkBlips = player.LurkerBlips
-						susLurker = player.SteamID
+						steamId64, _ := strconv.ParseUint(player.SteamID, 10, 64)
+						susLurker = steamId64
 					}
 				}
 			}
 			for _, player := range game.PotentialRound.PlayerStats {
 				if player.Side == 2 {
-					if player.LurkerBlips == susLurkBlips && player.SteamID != susLurker {
+					steamId64, _ := strconv.ParseUint(player.SteamID, 10, 64)
+					if player.LurkerBlips == susLurkBlips && steamId64 != susLurker {
 						invalidLurk = true
 					}
 				}
@@ -1084,8 +1087,9 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 				if game.PotentialRound.PlayerStats[e.Player.SteamID64] == nil && e.Player.IsBot && e.Player.IsAlive() {
 					//get team
 					team := e.NewTeamState
-					player := &playerStats{Name: e.Player.Name, SteamID: e.Player.SteamID64, IsBot: e.Player.IsBot, Side: int(team.Team()), TeamENUM: team.ID(), TeamClanName: validateTeamName(game, team.ClanName(), team.Team()), Health: 100, TradeList: make(map[uint64]int), DamageList: make(map[uint64]int)}
-					game.PotentialRound.PlayerStats[player.SteamID] = player
+					player := &playerStats{Name: e.Player.Name, SteamID: strconv.FormatUint(e.Player.SteamID64, 10), IsBot: e.Player.IsBot, Side: int(team.Team()), TeamENUM: team.ID(), TeamClanName: validateTeamName(game, team.ClanName(), team.Team()), Health: 100, TradeList: make(map[uint64]int), DamageList: make(map[uint64]int)}
+					steamId64, _ := strconv.ParseUint(player.SteamID, 10, 64)
+					game.PotentialRound.PlayerStats[steamId64] = player
 				}
 			}
 		}

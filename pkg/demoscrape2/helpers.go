@@ -3,7 +3,6 @@ package demoscrape2
 import (
 	"fmt"
 	log "github.com/sirupsen/logrus"
-	"strconv"
 	"strings"
 
 	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
@@ -144,7 +143,7 @@ func playersWithArmor(game *Game, team *common.TeamState) int {
 func getPlayerAPIDict(side string, player *playerStats) Dictionary {
 
 	return Dictionary{
-		"playerSteamId": strconv.FormatUint(player.SteamID, 10),
+		"playerSteamId": player.SteamID,
 		"side":          side,
 		"teamName":      player.TeamClanName,
 		"adp":           player.DeathPlacement,
