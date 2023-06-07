@@ -3,6 +3,7 @@ package demoscrape2
 import (
 	log "github.com/sirupsen/logrus"
 	"math"
+	"strconv"
 )
 
 func endOfMatchProcessing(game *Game) {
@@ -157,9 +158,10 @@ func endOfMatchProcessing(game *Game) {
 				if player.RF != 0 {
 					if game.Rounds[i].EndDueToBombEvent {
 						player.Rws = 70 * (float64(player.Damage) / float64(game.Rounds[i].WinTeamDmg))
-						if player.Side == 2 && game.Rounds[i].Planter == player.SteamID {
+						steamId64, _ := strconv.ParseUint(player.SteamID, 10, 64)
+						if player.Side == 2 && game.Rounds[i].Planter == steamId64 {
 							player.Rws += 30
-						} else if player.Side == 3 && game.Rounds[i].Defuser == player.SteamID {
+						} else if player.Side == 3 && game.Rounds[i].Defuser == steamId64 {
 							player.Rws += 30
 						}
 					} else { //round ended due to damage/time
