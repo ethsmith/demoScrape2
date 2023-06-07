@@ -67,8 +67,8 @@ type teamStats struct {
 	CtWinPoints    float64 `json:"ctWinPoints"`
 	TImpactPoints  float64 `json:"TImpactPoints"`
 	CtImpactPoints float64 `json:"ctImpactPoints"`
-	FourVFiveW    int      `json:"fourVFiveW"`
-	FourVFiveS    int      `json:"fourVFiveS"`
+	FourVFiveW     int     `json:"fourVFiveW"`
+	FourVFiveS     int     `json:"fourVFiveS"`
 	FiveVFourW     int     `json:"fiveVFourW"`
 	FiveVFourS     int     `json:"fiveVFourS"`
 	Pistols        int     `json:"pistols"`
@@ -141,7 +141,7 @@ type wpalog struct {
 
 type playerStats struct {
 	Name    string `json:"name"`
-	SteamID uint64 `json:"steamID"`
+	SteamID string `json:"steamID"`
 	IsBot   bool   `json:"isBot"`
 	//teamID  int
 	TeamENUM     int    `json:"teamENUM"`
