@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.3
 
 require (
-	github.com/markus-wa/demoinfocs-golang/v4 v4.0.0-beta.5.0.20231026145227-3c4b79fde38c
+	github.com/markus-wa/demoinfocs-golang/v4 v4.0.0
 	github.com/sirupsen/logrus v1.9.0
 )
 
@@ -20,6 +20,5 @@ require (
 	github.com/oklog/ulid/v2 v2.1.0 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8 // indirect
-	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/protobuf v1.31.0 // indirect
 )
