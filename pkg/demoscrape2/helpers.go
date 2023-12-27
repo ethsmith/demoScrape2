@@ -2,11 +2,12 @@ package demoscrape2
 
 import (
 	"fmt"
-	log "github.com/sirupsen/logrus"
 	"strings"
 
-	dem "github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs"
-	"github.com/markus-wa/demoinfocs-golang/v2/pkg/demoinfocs/common"
+	log "github.com/sirupsen/logrus"
+
+	dem "github.com/markus-wa/demoinfocs-golang/v4/pkg/demoinfocs"
+	"github.com/markus-wa/demoinfocs-golang/v4/pkg/demoinfocs/common"
 )
 
 type Dictionary map[string]interface{}
