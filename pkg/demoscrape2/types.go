@@ -2,26 +2,27 @@ package demoscrape2
 
 type Game struct {
 	//winnerID         int
-	CoreID           string                  `json:"coreID"`
-	MapNum           int                     `json:"mapNum"`
-	WinnerClanName   string                  `json:"winnerClanName"`
-	Result           string                  `json:"result"`
-	Rounds           []*round                `json:"rounds"`
-	PotentialRound   *round                  `json:"potentialRound"`
-	Teams            map[string]*team        `json:"teams"`
-	Flags            flag                    `json:"flags"`
-	MapName          string                  `json:"mapName"`
-	TickRate         int                     `json:"tickRate"`
-	TickLength       int                     `json:"tickLength"`
-	RoundsToWin      int                     `json:"roundsToWin"` //30 or 16
-	TotalPlayerStats map[uint64]*playerStats `json:"totalPlayerStats"`
-	CtPlayerStats    map[uint64]*playerStats `json:"ctPlayerStats"`
-	TPlayerStats     map[uint64]*playerStats `json:"TPlayerStats"`
-	TotalTeamStats   map[string]*teamStats   `json:"totalTeamStats"`
-	PlayerOrder      []uint64                `json:"playerOrder"`
-	TeamOrder        []string                `json:"teamOrder"`
-	TotalRounds      int                     `json:"totalRounds"`
-	TotalWPAlog      []*wpalog               `json:"totalWPAlog"`
+	CoreID             string                  `json:"coreID"`
+	MapNum             int                     `json:"mapNum"`
+	WinnerClanName     string                  `json:"winnerClanName"`
+	Result             string                  `json:"result"`
+	Rounds             []*round                `json:"rounds"`
+	PotentialRound     *round                  `json:"potentialRound"`
+	Teams              map[string]*team        `json:"teams"`
+	Flags              flag                    `json:"flags"`
+	MapName            string                  `json:"mapName"`
+	TickRate           int                     `json:"tickRate"`
+	TickLength         int                     `json:"tickLength"`
+	RoundsToWin        int                     `json:"roundsToWin"` //30 or 16
+	TotalPlayerStats   map[uint64]*playerStats `json:"totalPlayerStats"`
+	CtPlayerStats      map[uint64]*playerStats `json:"ctPlayerStats"`
+	TPlayerStats       map[uint64]*playerStats `json:"TPlayerStats"`
+	TotalTeamStats     map[string]*teamStats   `json:"totalTeamStats"`
+	ReconnectedPlayers map[uint64]bool         `json:"reconnectedPlayers"` // Map of SteamID to reconnection status
+	PlayerOrder        []uint64                `json:"playerOrder"`
+	TeamOrder          []string                `json:"teamOrder"`
+	TotalRounds        int                     `json:"totalRounds"`
+	TotalWPAlog        []*wpalog               `json:"totalWPAlog"`
 }
 
 type flag struct {
