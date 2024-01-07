@@ -69,7 +69,9 @@ var killValues = map[string]float64{
 }
 
 func InitGameObject() *Game {
-	g := Game{}
+	g := Game{
+		ReconnectedPlayers: make(map[uint64]bool),
+	}
 	g.Rounds = make([]*round, 0)
 	g.PotentialRound = &round{}
 
@@ -102,7 +104,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 	}
 
 	//set tick rate
-	game.TickRate = int(math.Round(p.TickRate()))
+	game.TickRate = 64
 	log.Debug("Tick rate is", game.TickRate)
 
 	game.TickLength = header.PlaybackTicks
@@ -150,7 +152,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 	}
 
 	initTeamPlayer := func(team *common.TeamState, currRoundObj *round) {
-		for _, teamMember := range team.Members() {
+		for _, teamMember := range getTeamMembers(team, game, p) {
 			player := &playerStats{Name: teamMember.Name, SteamID: strconv.FormatUint(teamMember.SteamID64, 10), IsBot: teamMember.IsBot, Side: int(team.Team()), TeamENUM: team.ID(), TeamClanName: validateTeamName(game, team.ClanName(), team.Team()), Health: 100, TradeList: make(map[uint64]int), DamageList: make(map[uint64]int)}
 			currRoundObj.PlayerStats[teamMember.SteamID64] = player
 		}
@@ -182,8 +184,8 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		game.PotentialRound = newRound
 
 		//track the number of people alive for clutch checking and record keeping
-		game.Flags.TAlive = len(terrorists.Members())
-		game.Flags.CtAlive = len(counterTerrorists.Members())
+		game.Flags.TAlive = len(getTeamMembers(terrorists, game, p))
+		game.Flags.CtAlive = len(getTeamMembers(counterTerrorists, game, p))
 		game.PotentialRound.InitTerroristCount = game.Flags.TAlive
 		game.PotentialRound.InitCTerroristCount = game.Flags.CtAlive
 
@@ -365,14 +367,24 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		game.MapName = *msg.MapName
 	})
 
+	p.RegisterEventHandler(func(e events.PlayerInfo) {
+		player := p.GameState().Participants().AllByUserID()[e.Index]
+		if player != nil {
+			// if game.potentialRound.playerStats[player.SteamID64] == nil {
+			// 	game.potentialRound.playerStats[player.SteamID64] = &playerStats{name: player.Name, steamID: player.SteamID64, isBot: player.IsBot, side: int(player.Team), teamENUM: int(player.Team), teamClanName: validateTeamName(game, player.TeamState.ClanName(), player.TeamState.Team()), health: 100, tradeList: make(map[uint64]int), damageList: make(map[uint64]int)}
+			// }
+			game.ReconnectedPlayers[player.SteamID64] = true
+		}
+	})
+
 	p.RegisterEventHandler(func(e events.FrameDone) {
 		//log.Debug("DIBES ", Game.flags.isGameLive)
 		if game.Flags.RoundStartedAt > 0 && game.Flags.RoundStartedAt+(1*game.TickRate) > p.GameState().IngameTick() && !game.Flags.HaveInitRound {
 			pistol := false
 
 			//we are going to check to see if the first pistol is actually starting
-			membersT := p.GameState().TeamTerrorists().Members()
-			membersCT := p.GameState().TeamCounterTerrorists().Members()
+			membersT := getTeamMembers(p.GameState().TeamTerrorists(), game, p)
+			membersCT := getTeamMembers(p.GameState().TeamCounterTerrorists(), game, p)
 			if len(membersT) != 0 && len(membersCT) != 0 {
 				if membersT[0].Money()+membersT[0].MoneySpentThisRound() == 800 && membersCT[0].Money()+membersCT[0].MoneySpentThisRound() == 800 {
 					//start the Game
@@ -431,20 +443,20 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 					Tick:                p.GameState().IngameTick(),
 					CtAlive:             game.Flags.CtAlive,
 					TAlive:              game.Flags.TAlive,
-					CtEquipVal:          calculateTeamEquipmentValue(game, p.GameState().TeamCounterTerrorists()),
-					TEquipVal:           calculateTeamEquipmentValue(game, p.GameState().TeamTerrorists()),
-					CtFlashes:           calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 15),
-					CtSmokes:            calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 16),
-					CtMolys:             calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 17),
-					CtFrags:             calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 14),
-					TFlashes:            calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 15),
-					TSmokes:             calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 16),
-					TMolys:              calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 17),
-					TFrags:              calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 14),
-					ClosestCTDisttoBomb: closestCTDisttoBomb(game, p.GameState().TeamCounterTerrorists(), p.GameState().Bomb()),
-					Kits:                numOfKits(game, p.GameState().TeamCounterTerrorists()),
-					CtArmor:             playersWithArmor(game, p.GameState().TeamCounterTerrorists()),
-					TArmor:              playersWithArmor(game, p.GameState().TeamTerrorists()),
+					CtEquipVal:          calculateTeamEquipmentValue(game, p.GameState().TeamCounterTerrorists(), p),
+					TEquipVal:           calculateTeamEquipmentValue(game, p.GameState().TeamTerrorists(), p),
+					CtFlashes:           calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 15, p),
+					CtSmokes:            calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 16, p),
+					CtMolys:             calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 17, p),
+					CtFrags:             calculateTeamEquipmentNum(game, p.GameState().TeamCounterTerrorists(), 14, p),
+					TFlashes:            calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 15, p),
+					TSmokes:             calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 16, p),
+					TMolys:              calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 17, p),
+					TFrags:              calculateTeamEquipmentNum(game, p.GameState().TeamTerrorists(), 14, p),
+					ClosestCTDisttoBomb: closestCTDisttoBomb(game, p.GameState().TeamCounterTerrorists(), p.GameState().Bomb(), p),
+					Kits:                numOfKits(game, p.GameState().TeamCounterTerrorists(), p),
+					CtArmor:             playersWithArmor(game, p.GameState().TeamCounterTerrorists(), p),
+					TArmor:              playersWithArmor(game, p.GameState().TeamTerrorists(), p),
 				}
 				game.PotentialRound.WPAlog = append(game.PotentialRound.WPAlog, newWPAentry)
 			}
@@ -458,7 +470,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 
 			//check for lurker
 			if game.Flags.TAlive > 2 && !game.Flags.PostWinCon && p.GameState().IngameTick() > (18*game.TickRate)+game.PotentialRound.StartingTick {
-				membersT := p.GameState().TeamTerrorists().Members()
+				membersT := getTeamMembers(p.GameState().TeamTerrorists(), game, p)
 				for _, terrorist := range membersT {
 					if terrorist.IsAlive() {
 						for _, teammate := range membersT {
@@ -510,8 +522,8 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		pistol := false
 
 		//we are going to check to see if the first pistol is actually starting
-		membersT := p.GameState().TeamTerrorists().Members()
-		membersCT := p.GameState().TeamCounterTerrorists().Members()
+		membersT := getTeamMembers(p.GameState().TeamTerrorists(), game, p)
+		membersCT := getTeamMembers(p.GameState().TeamCounterTerrorists(), game, p)
 		if len(membersT) != 0 && len(membersCT) != 0 {
 			if membersT[0].Money()+membersT[0].MoneySpentThisRound() == 800 && membersCT[0].Money()+membersCT[0].MoneySpentThisRound() == 800 {
 				//start the Game
@@ -721,7 +733,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 				if !game.Flags.PostWinCon {
 					if game.Flags.TAlive == 1 && game.Flags.TClutchVal == 0 {
 						game.Flags.TClutchVal = game.Flags.CtAlive
-						membersT := p.GameState().TeamTerrorists().Members()
+						membersT := getTeamMembers(p.GameState().TeamTerrorists(), game, p)
 						for _, terrorist := range membersT {
 							if terrorist.IsAlive() && e.Victim.SteamID64 != terrorist.SteamID64 {
 								game.Flags.TClutchSteam = terrorist.SteamID64
@@ -731,7 +743,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 					}
 					if game.Flags.CtAlive == 1 && game.Flags.CtClutchVal == 0 {
 						game.Flags.CtClutchVal = game.Flags.TAlive
-						membersCT := p.GameState().TeamCounterTerrorists().Members()
+						membersCT := getTeamMembers(p.GameState().TeamCounterTerrorists(), game, p)
 						for _, counterTerrorist := range membersCT {
 							if counterTerrorist.IsAlive() && e.Victim.SteamID64 != counterTerrorist.SteamID64 {
 								game.Flags.CtClutchSteam = counterTerrorist.SteamID64
@@ -1025,18 +1037,22 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 	p.RegisterEventHandler(func(e events.PlayerDisconnected) {
 		log.Debug("Player DC", e.Player)
 
+		if game.ReconnectedPlayers[e.Player.SteamID64] {
+			game.ReconnectedPlayers[e.Player.SteamID64] = false
+		}
+
 		//update alive players
 		if game.Flags.IsGameLive {
 			game.Flags.TAlive = 0
 			game.Flags.CtAlive = 0
 
-			membersT := p.GameState().TeamTerrorists().Members()
+			membersT := getTeamMembers(p.GameState().TeamTerrorists(), game, p)
 			for _, terrorist := range membersT {
 				if terrorist.IsAlive() {
 					game.Flags.TAlive += 1
 				}
 			}
-			membersCT := p.GameState().TeamCounterTerrorists().Members()
+			membersCT := getTeamMembers(p.GameState().TeamCounterTerrorists(), game, p)
 			for _, counterTerrorist := range membersCT {
 				if counterTerrorist.IsAlive() {
 					game.Flags.CtAlive += 1
