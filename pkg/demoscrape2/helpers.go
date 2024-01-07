@@ -10,6 +10,15 @@ import (
 
 type Dictionary map[string]interface{}
 
+func contains(players []*common.Player, player *common.Player) bool {
+	for _, p := range players {
+		if p.SteamID64 == player.SteamID64 {
+			return true
+		}
+	}
+	return false
+}
+
 func getTeamMembers(team *common.TeamState, game *Game, p dem.Parser) []*common.Player {
 	players := team.Members()
 	allPlayers := p.GameState().Participants().All()
@@ -25,7 +34,7 @@ func getTeamMembers(team *common.TeamState, game *Game, p dem.Parser) []*common.
 	// Grab reconnected players
 	for steamId, connected := range game.ReconnectedPlayers {
 		for _, player := range allPlayers {
-			if player.SteamID64 == steamId && player.Team == team.Team() && connected {
+			if player.SteamID64 == steamId && player.Team == team.Team() && connected && !contains(teamPlayers, player) {
 				teamPlayers = append(teamPlayers, player)
 			}
 		}
