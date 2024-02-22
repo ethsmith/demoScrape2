@@ -159,6 +159,9 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 	}
 
 	initRound := func() {
+		// Reset the connectedAfterRoundStart
+		game.ConnectedAfterRoundStart = make(map[uint64]bool)
+
 		game.Flags.RoundIntegrityStart = p.GameState().TotalRoundsPlayed() + 1
 		log.Debug("We are starting round", game.Flags.RoundIntegrityStart)
 
@@ -374,6 +377,9 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			// 	game.potentialRound.playerStats[player.SteamID64] = &playerStats{name: player.Name, steamID: player.SteamID64, isBot: player.IsBot, side: int(player.Team), teamENUM: int(player.Team), teamClanName: validateTeamName(game, player.TeamState.ClanName(), player.TeamState.Team()), health: 100, tradeList: make(map[uint64]int), damageList: make(map[uint64]int)}
 			// }
 			game.ReconnectedPlayers[player.SteamID64] = true
+			if game.Flags.InRound && game.Flags.IsGameLive {
+				game.ConnectedAfterRoundStart[player.SteamID64] = true
+			}
 		}
 	})
 
