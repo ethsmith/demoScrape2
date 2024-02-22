@@ -915,10 +915,13 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		//log.Debug("Player Hurt\n")
 		if game.Flags.IsGameLive {
 			equipment := e.Weapon.Type
-			if e.Player != nil {
+			if e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil {
 				game.PotentialRound.PlayerStats[e.Player.SteamID64].DamageTaken += e.HealthDamageTaken
+			} else if e.Player != nil && e.Player.IsConnected {
+				//blow up
+				panic("We have a connected player who is not nil but no playerstats!")
 			}
-			if e.Player != nil && e.Attacker != nil && e.Player.Team != e.Attacker.Team {
+			if e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil && e.Attacker != nil && e.Player.Team != e.Attacker.Team {
 				game.PotentialRound.PlayerStats[e.Attacker.SteamID64].Damage += e.HealthDamageTaken
 
 				//add to damage list for supp damage calc
