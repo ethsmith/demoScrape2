@@ -585,6 +585,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			//we want to actually process the round
 			if game.Flags.IsGameLive && validWinner && game.Flags.RoundIntegrityStart == p.GameState().TotalRoundsPlayed() {
 				game.PotentialRound.WinnerENUM = int(e.Winner)
+				game.PotentialRound.RoundEndReason = roundEndReasons[int(e.Reason)]
 				processRoundOnWinCon(validateTeamName(game, e.WinnerState.ClanName(), e.WinnerState.Team()))
 
 				//check last round
