@@ -112,7 +112,7 @@ type round struct {
 	ServerNormalizer   int     `json:"serverNormalizer"`
 	ServerImpactPoints float64 `json:"serverImpactPoints"`
 	KnifeRound         bool    `json:"knifeRound"`
-	RoundEndReason     int     `json:"roundEndReason"`
+	RoundEndReason     string  `json:"roundEndReason"`
 
 	WPAlog        []*wpalog `json:"WPAlog"`
 	BombStartTick int       `json:"bombStartTick"`
