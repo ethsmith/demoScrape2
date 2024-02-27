@@ -21,6 +21,9 @@ func removeInvalidRounds(game *Game) {
 			//this i-th round is bad and we will remove it
 		}
 	}
+	for i, j := 0, len(validRounds)-1; i < j; i, j = i+1, j-1 {
+		validRounds[i], validRounds[j] = validRounds[j], validRounds[i]
+	}
 	game.Rounds = validRounds
 }
 
