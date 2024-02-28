@@ -46,6 +46,7 @@ const printDebugLog = true
 const FORCE_NEW_STATS_UPLOAD = false
 const ENABLE_WPA_DATA_OUTPUT = false
 const BACKEND_PUSHING = true
+const MR = 12
 
 const tradeCutoff = 4 // in seconds
 var multiKillBonus = [...]float64{0, 0, 0.3, 0.7, 1.2, 2}
@@ -129,7 +130,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		game.Teams[validateTeamName(game, teamTemp.ClanName(), teamTemp.Team())] = &team{Name: validateTeamName(game, teamTemp.ClanName(), teamTemp.Team())}
 
 		//only handling normal length matches
-		game.RoundsToWin = 13
+		game.RoundsToWin = MR + 1
 
 	}
 
@@ -969,10 +970,6 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 
 		}
 		//log.Debug("Player Flashed", blindTicks, e.Attacker)
-	})
-
-	p.RegisterEventHandler(func(e events.RoundImpactScoreData) {
-		log.Debug("-------ROUNDIMPACTSCOREDATA", e.RawMessage)
 	})
 
 	p.RegisterEventHandler(func(e events.BombPlanted) {
