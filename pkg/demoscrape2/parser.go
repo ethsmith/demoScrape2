@@ -222,10 +222,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		game.Flags.InRound = false
 		game.PotentialRound.EndingTick = p.GameState().IngameTick()
 		game.Flags.RoundIntegrityEndOfficial = p.GameState().TotalRoundsPlayed()
-		if lastRound {
-			//game.Flags.RoundIntegrityEndOfficial += 1
-			game.TotalRounds = game.Flags.RoundIntegrityEndOfficial
-		}
+
 		log.Debug("We are processing round final stuff", game.Flags.RoundIntegrityEndOfficial)
 		log.Debug(len(game.Rounds))
 
@@ -360,6 +357,11 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			//add our valid round
 			game.Rounds = append(game.Rounds, game.PotentialRound)
 		}
+		if lastRound {
+			//game.Flags.RoundIntegrityEndOfficial += 1
+			game.TotalRounds = game.Flags.RoundIntegrityEndOfficial
+			game.Flags.IsGameLive = false
+		}
 
 		//endRound function functionality
 
@@ -419,7 +421,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		}
 
 		//add to WPAlog
-		if game.Flags.InRound && !game.Flags.PostWinCon && ENABLE_WPA_DATA_OUTPUT {
+		if game.Flags.IsGameLive && game.Flags.InRound && !game.Flags.PostWinCon && ENABLE_WPA_DATA_OUTPUT {
 			//hits every new frame (typically each 1-4 ticks)
 			logSize := len(game.PotentialRound.WPAlog)
 			clock := 0
@@ -469,7 +471,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			}
 		}
 
-		if game.Flags.InRound && game.Flags.LastTickProcessed+(4*game.TickRate) < p.GameState().IngameTick() {
+		if game.Flags.IsGameLive && game.Flags.InRound && game.Flags.LastTickProcessed+(4*game.TickRate) < p.GameState().IngameTick() {
 			game.Flags.LastTickProcessed = p.GameState().IngameTick()
 			game.Flags.TicksProcessed += 1
 
