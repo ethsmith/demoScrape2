@@ -954,12 +954,12 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		//log.Debug("Player Flashed")
 		if game.Flags.IsGameLive && e.Player != nil && e.Attacker != nil {
 			tick := float64(p.GameState().IngameTick())
-			blindTicks := e.FlashDuration().Seconds() * 128.0
+			blindTicks := e.FlashDuration().Seconds() * float64(game.TickRate)
 			victim := e.Player
 			flasher := e.Attacker
-			if flasher.Team != victim.Team && blindTicks > 128.0 && victim.IsAlive() && (float64(victim.FlashDuration) < (blindTicks/128.0 + 1)) {
+			if flasher.Team != victim.Team && blindTicks > float64(game.TickRate) && victim.IsAlive() && (float64(victim.FlashDuration) < (blindTicks/float64(game.TickRate) + 1)) {
 				game.PotentialRound.PlayerStats[flasher.SteamID64].Ef += 1
-				game.PotentialRound.PlayerStats[flasher.SteamID64].EnemyFlashTime += (blindTicks / 128.0)
+				game.PotentialRound.PlayerStats[flasher.SteamID64].EnemyFlashTime += (blindTicks / float64(game.TickRate))
 				if tick+blindTicks > game.PotentialRound.PlayerStats[victim.SteamID64].MostRecentFlashVal {
 					game.PotentialRound.PlayerStats[victim.SteamID64].MostRecentFlashVal = tick + blindTicks
 					game.PotentialRound.PlayerStats[victim.SteamID64].MostRecentFlasher = flasher.SteamID64
