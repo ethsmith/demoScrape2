@@ -46,6 +46,7 @@ const printDebugLog = true
 const FORCE_NEW_STATS_UPLOAD = false
 const ENABLE_WPA_DATA_OUTPUT = false
 const BACKEND_PUSHING = true
+const MR = 12
 
 const tradeCutoff = 4 // in seconds
 var multiKillBonus = [...]float64{0, 0, 0.3, 0.7, 1.2, 2}
@@ -129,7 +130,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		game.Teams[validateTeamName(game, teamTemp.ClanName(), teamTemp.Team())] = &team{Name: validateTeamName(game, teamTemp.ClanName(), teamTemp.Team())}
 
 		//only handling normal length matches
-		game.RoundsToWin = 13
+		game.RoundsToWin = MR + 1
 
 	}
 
@@ -221,10 +222,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		game.Flags.InRound = false
 		game.PotentialRound.EndingTick = p.GameState().IngameTick()
 		game.Flags.RoundIntegrityEndOfficial = p.GameState().TotalRoundsPlayed()
-		if lastRound {
-			//game.Flags.RoundIntegrityEndOfficial += 1
-			game.TotalRounds = game.Flags.RoundIntegrityEndOfficial
-		}
+
 		log.Debug("We are processing round final stuff", game.Flags.RoundIntegrityEndOfficial)
 		log.Debug(len(game.Rounds))
 
@@ -359,6 +357,11 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			//add our valid round
 			game.Rounds = append(game.Rounds, game.PotentialRound)
 		}
+		if lastRound {
+			//game.Flags.RoundIntegrityEndOfficial += 1
+			game.TotalRounds = game.Flags.RoundIntegrityEndOfficial
+			game.Flags.IsGameLive = false
+		}
 
 		//endRound function functionality
 
@@ -418,7 +421,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		}
 
 		//add to WPAlog
-		if game.Flags.InRound && !game.Flags.PostWinCon && ENABLE_WPA_DATA_OUTPUT {
+		if game.Flags.IsGameLive && game.Flags.InRound && !game.Flags.PostWinCon && ENABLE_WPA_DATA_OUTPUT {
 			//hits every new frame (typically each 1-4 ticks)
 			logSize := len(game.PotentialRound.WPAlog)
 			clock := 0
@@ -468,7 +471,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			}
 		}
 
-		if game.Flags.InRound && game.Flags.LastTickProcessed+(4*game.TickRate) < p.GameState().IngameTick() {
+		if game.Flags.IsGameLive && game.Flags.InRound && game.Flags.LastTickProcessed+(4*game.TickRate) < p.GameState().IngameTick() {
 			game.Flags.LastTickProcessed = p.GameState().IngameTick()
 			game.Flags.TicksProcessed += 1
 
@@ -951,12 +954,12 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		//log.Debug("Player Flashed")
 		if game.Flags.IsGameLive && e.Player != nil && e.Attacker != nil {
 			tick := float64(p.GameState().IngameTick())
-			blindTicks := e.FlashDuration().Seconds() * 128.0
+			blindTicks := e.FlashDuration().Seconds() * float64(game.TickRate)
 			victim := e.Player
 			flasher := e.Attacker
-			if flasher.Team != victim.Team && blindTicks > 128.0 && victim.IsAlive() && (float64(victim.FlashDuration) < (blindTicks/128.0 + 1)) {
+			if flasher.Team != victim.Team && blindTicks > float64(game.TickRate) && victim.IsAlive() && (float64(victim.FlashDuration) < (blindTicks/float64(game.TickRate) + 1)) {
 				game.PotentialRound.PlayerStats[flasher.SteamID64].Ef += 1
-				game.PotentialRound.PlayerStats[flasher.SteamID64].EnemyFlashTime += (blindTicks / 128.0)
+				game.PotentialRound.PlayerStats[flasher.SteamID64].EnemyFlashTime += (blindTicks / float64(game.TickRate))
 				if tick+blindTicks > game.PotentialRound.PlayerStats[victim.SteamID64].MostRecentFlashVal {
 					game.PotentialRound.PlayerStats[victim.SteamID64].MostRecentFlashVal = tick + blindTicks
 					game.PotentialRound.PlayerStats[victim.SteamID64].MostRecentFlasher = flasher.SteamID64
@@ -969,10 +972,6 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 
 		}
 		//log.Debug("Player Flashed", blindTicks, e.Attacker)
-	})
-
-	p.RegisterEventHandler(func(e events.RoundImpactScoreData) {
-		log.Debug("-------ROUNDIMPACTSCOREDATA", e.RawMessage)
 	})
 
 	p.RegisterEventHandler(func(e events.BombPlanted) {
