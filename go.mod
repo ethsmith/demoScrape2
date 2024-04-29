@@ -5,7 +5,7 @@ go 1.21
 toolchain go1.21.3
 
 require (
-	github.com/markus-wa/demoinfocs-golang/v4 v4.0.3
+	github.com/markus-wa/demoinfocs-golang/v4 v4.1.3
 	github.com/sirupsen/logrus v1.9.0
 )
 
