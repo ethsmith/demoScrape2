@@ -385,6 +385,10 @@ func calculateDerivedFields(game *Game) {
 		player.DeltaRating = player.Rating - adjustedAvg
 	}
 
+	for _, team := range game.TotalTeamStats {
+		team.RatingAvg = team.RatingAvg / float64(team.Normalizer)
+	}
+
 	calculateSidedStats(game)
 	return
 }
