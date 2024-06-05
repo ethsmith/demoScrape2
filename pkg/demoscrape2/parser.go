@@ -650,6 +650,16 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		//CS2 swapped this event to be before RoundEnd
 		//We have relied on this as a back up for failed RoundEnd events
 		//may revisit depending on event reliability
+
+		//added to ensure that a bad round that gets finished does not premuturely finish the game since we track score separately
+		if game.Flags.IsGameLive {
+			//we take the existing preupdate score of the updating team score
+			updatedTeam := game.Teams[validateTeamName(game, e.TeamState.ClanName(), e.TeamState.Team())]
+			//and compare to the old score from scoreboard
+			if e.OldScore != updatedTeam.Score {
+				updatedTeam.Score = e.OldScore
+			}
+		}
 	})
 
 	//round end official doesnt fire on the last round
