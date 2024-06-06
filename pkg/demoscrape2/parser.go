@@ -504,12 +504,14 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 					if terrorist.IsAlive() {
 						if game.PotentialRound.PlayerStats[terrorist.SteamID64] == nil {
 							log.Debug(terrorist.Name)
+						} else {
+							dist := game.PotentialRound.PlayerStats[terrorist.SteamID64].DistanceToTeammates
+							if dist < lurkerDist && dist > 0 {
+								lurkerDist = dist
+								lurkerSteam = terrorist.SteamID64
+							}
 						}
-						dist := game.PotentialRound.PlayerStats[terrorist.SteamID64].DistanceToTeammates
-						if dist < lurkerDist && dist > 0 {
-							lurkerDist = dist
-							lurkerSteam = terrorist.SteamID64
-						}
+
 					}
 				}
 				if lurkerSteam != 0 {
