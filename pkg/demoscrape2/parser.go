@@ -699,6 +699,11 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			if e.Assister != nil && pS[e.Assister.SteamID64] != nil {
 				assisterExists = true
 			}
+			if e.Weapon.Type == 404 && isRoundFinalInHalf(game.PotentialRound.RoundNum) {
+				killerExists = false
+				victimExists = false
+				assisterExists = false
+			}
 
 			killValue := 1.0
 			multiplier := 1.0
@@ -937,9 +942,10 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 		//log.Debug("Player Hurt\n")
 		if game.Flags.IsGameLive {
 			equipment := e.Weapon.Type
-			if e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil {
+			validDmg := e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil && (equipment != 404 || !isRoundFinalInHalf(game.PotentialRound.RoundNum))
+			if validDmg {
 				game.PotentialRound.PlayerStats[e.Player.SteamID64].DamageTaken += e.HealthDamageTaken
-			} else if e.Player != nil && e.Player.IsConnected {
+			} else if e.Player != nil && e.Player.IsConnected && !(equipment == 404 && isRoundFinalInHalf(game.PotentialRound.RoundNum)) {
 				//blow up
 				panic("We have a connected player who is not nil but no playerstats!")
 			}
