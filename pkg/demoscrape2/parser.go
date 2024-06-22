@@ -940,8 +940,10 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			if e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil {
 				game.PotentialRound.PlayerStats[e.Player.SteamID64].DamageTaken += e.HealthDamageTaken
 			} else if e.Player != nil && e.Player.IsConnected {
-				//blow up
-				panic("We have a connected player who is not nil but no playerstats!")
+				//blow up if we aren't in freeze time
+				if !p.GameState().IsFreezetimePeriod() {
+					panic("We have a connected player who is not nil but no playerstats!")
+				}
 			}
 			if e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil && e.Attacker != nil && e.Player.Team != e.Attacker.Team {
 				game.PotentialRound.PlayerStats[e.Attacker.SteamID64].Damage += e.HealthDamageTaken
