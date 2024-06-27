@@ -945,7 +945,7 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 			validDmg := e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil && (equipment != 404 || !isRoundFinalInHalf(game.PotentialRound.RoundNum))
 			if validDmg {
 				game.PotentialRound.PlayerStats[e.Player.SteamID64].DamageTaken += e.HealthDamageTaken
-			} else if e.Player != nil && e.Player.IsConnected {
+			} else if e.Player != nil && e.Player.IsConnected && !(equipment == 404 && isRoundFinalInHalf(game.PotentialRound.RoundNum)) {
 				//blow up if we aren't in freeze time
 				if !p.GameState().IsFreezetimePeriod() {
 					panic("We have a connected player who is not nil but no playerstats!")
