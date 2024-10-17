@@ -941,7 +941,12 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 	p.RegisterEventHandler(func(e events.PlayerHurt) {
 		//log.Debug("Player Hurt\n")
 		if game.Flags.IsGameLive {
-			equipment := e.Weapon.Type
+			var equipment common.EquipmentType
+			if e.Weapon == nil {
+				equipment = -999
+			} else {
+				equipment = e.Weapon.Type
+			}
 			validDmg := e.Player != nil && game.PotentialRound.PlayerStats[e.Player.SteamID64] != nil && (equipment != 404 || !isRoundFinalInHalf(game.PotentialRound.RoundNum))
 			if validDmg {
 				game.PotentialRound.PlayerStats[e.Player.SteamID64].DamageTaken += e.HealthDamageTaken
