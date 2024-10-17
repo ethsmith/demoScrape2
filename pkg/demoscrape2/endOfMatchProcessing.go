@@ -40,7 +40,6 @@ func endOfMatchProcessing(game *Game) {
 
 	for i := len(game.Rounds) - 1; i >= 0; i-- {
 		game.TotalWPAlog = append(game.TotalWPAlog, game.Rounds[i].WPAlog...)
-		game.Rounds[i].ServerNormalizer += game.Rounds[i].InitTerroristCount + game.Rounds[i].InitCTerroristCount
 
 		for teamName, team := range game.Rounds[i].TeamStats {
 			if game.TotalTeamStats[teamName] == nil && teamName != "" {
@@ -246,13 +245,37 @@ func calculateDerivedFields(game *Game) {
 		player.Tr = float64(player.Traded) / float64(player.Deaths)
 		player.KR = float64(player.Kills) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
-		player.CtADR = float64(player.CtDamage) / float64(player.CtRounds)
-		player.TADR = float64(player.TDamage) / float64(player.TRounds)
-		player.TKAST = player.TKASTRounds / float64(player.TRounds)
-		player.CtKAST = player.CtKASTRounds / float64(player.CtRounds)
-		player.TADP = player.TADP / float64(player.TDeaths)
-		player.CtADP = player.CtADP / float64(player.CtDeaths)
 		player.Rws = player.Rws / float64(player.Rounds)
+
+		if player.CtRounds > 0 {
+			player.CtADR = float64(player.CtDamage) / float64(player.CtRounds)
+			player.CtKAST = player.CtKASTRounds / float64(player.CtRounds)
+			player.CtADP = player.CtADP / float64(player.CtDeaths)
+			if player.CtDeaths == 0 {
+				player.CtADP = 0
+			}
+			ctImpactRoundAvg += player.CtImpactPoints
+			ctKillRoundAvg += float64(player.CtKills)
+			ctDeathRoundAvg += float64(player.CtDeaths)
+			ctKastRoundAvg += player.CtKASTRounds
+			ctAdrAvg += float64(player.CtDamage)
+			ctRoundNormalizer += player.CtRounds
+		}
+
+		if player.TRounds > 0 {
+			player.TADR = float64(player.TDamage) / float64(player.TRounds)
+			player.TKAST = player.TKASTRounds / float64(player.TRounds)
+			player.TADP = player.TADP / float64(player.TDeaths)
+			if player.TDeaths == 0 {
+				player.TADP = 0
+			}
+			tImpactRoundAvg += player.TImpactPoints
+			tKillRoundAvg += float64(player.TKills)
+			tDeathRoundAvg += float64(player.TDeaths)
+			tKastRoundAvg += player.TKASTRounds
+			tAdrAvg += float64(player.TDamage)
+			tRoundNormalizer += player.TRounds
+		}
 
 		if math.IsNaN(player.Rws) {
 			player.Rws = 0.0
@@ -264,12 +287,6 @@ func calculateDerivedFields(game *Game) {
 			player.DeathPlacement = 0
 			player.Tr = .50
 		}
-		if player.TDeaths == 0 {
-			player.TADP = 0
-		}
-		if player.CtDeaths == 0 {
-			player.CtADP = 0
-		}
 
 		roundNormalizer += player.Rounds
 		impactRoundAvg += player.ImpactPoints
@@ -277,21 +294,6 @@ func calculateDerivedFields(game *Game) {
 		deathRoundAvg += float64(player.Deaths)
 		kastRoundAvg += player.KastRounds
 		adrAvg += float64(player.Damage)
-
-		tImpactRoundAvg += player.TImpactPoints
-		tKillRoundAvg += float64(player.TKills)
-		tDeathRoundAvg += float64(player.CtDeaths)
-		tKastRoundAvg += player.TKASTRounds
-		tAdrAvg += float64(player.TDamage)
-		tRoundNormalizer += player.TRounds
-
-		ctImpactRoundAvg += player.CtImpactPoints
-		ctKillRoundAvg += float64(player.CtKills)
-		ctDeathRoundAvg += float64(player.TDeaths)
-		ctKastRoundAvg += player.CtKASTRounds
-		ctAdrAvg += float64(player.CtDamage)
-		ctRoundNormalizer += player.CtRounds
-
 	}
 
 	impactRoundAvg /= float64(roundNormalizer)
@@ -331,40 +333,44 @@ func calculateDerivedFields(game *Game) {
 		player.Rating = (0.3 * player.ImpactRating) + (0.35 * (player.KR / killRoundAvg)) + playerRatingDeathComponent + (0.08 * (player.Kast / kastRoundAvg)) + (0.2 * (player.Adr / adrAvg))
 
 		//ctRating
-		openingFactor = (float64(player.CtOK-player.CtOL) / 13.0) + 1
-		playerIPR = player.CtImpactPoints / float64(player.CtRounds)
-		playerWPR = player.CtWinPoints / float64(player.CtRounds)
+		if player.CtRounds > 0 {
+			openingFactor = (float64(player.CtOK-player.CtOL) / 13.0) + 1
+			playerIPR = player.CtImpactPoints / float64(player.CtRounds)
+			playerWPR = player.CtWinPoints / float64(player.CtRounds)
 
-		if player.CtTeamsWinPoints != 0 {
-			player.CtImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / ctImpactRoundAvg)) + (0.3 * (playerWPR / (player.CtTeamsWinPoints / float64(player.CtWinPointsNormalizer))))
-		} else {
-			log.Debug("UH 16-0?")
-			player.CtImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / ctImpactRoundAvg))
+			if player.CtTeamsWinPoints != 0 {
+				player.CtImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / ctImpactRoundAvg)) + (0.3 * (playerWPR / (player.CtTeamsWinPoints / float64(player.CtWinPointsNormalizer))))
+			} else {
+				log.Debug("UH 16-0?")
+				player.CtImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / ctImpactRoundAvg))
+			}
+			playerDR = float64(player.CtDeaths) / float64(player.CtRounds)
+			playerRatingDeathComponent = 0.07 * (ctDeathRoundAvg / playerDR)
+			if player.CtDeaths == 0 || playerRatingDeathComponent > 0.21 {
+				playerRatingDeathComponent = 0.21
+			}
+			player.CtRating = (0.3 * player.CtImpactRating) + (0.35 * ((float64(player.CtKills) / float64(player.CtRounds)) / ctKillRoundAvg)) + playerRatingDeathComponent + (0.08 * (player.CtKAST / ctKastRoundAvg)) + (0.2 * (player.CtADR / ctAdrAvg))
 		}
-		playerDR = float64(player.CtDeaths) / float64(player.CtRounds)
-		playerRatingDeathComponent = 0.07 * (ctDeathRoundAvg / playerDR)
-		if player.CtDeaths == 0 || playerRatingDeathComponent > 0.21 {
-			playerRatingDeathComponent = 0.21
-		}
-		player.CtRating = (0.3 * player.CtImpactRating) + (0.35 * ((float64(player.CtKills) / float64(player.CtRounds)) / ctKillRoundAvg)) + playerRatingDeathComponent + (0.08 * (player.CtKAST / ctKastRoundAvg)) + (0.2 * (player.CtADR / ctAdrAvg))
 
 		//tRating
-		openingFactor = (float64(player.TOK-player.TOL) / 13.0) + 1
-		playerIPR = player.TImpactPoints / float64(player.TRounds)
-		playerWPR = player.TWinPoints / float64(player.TRounds)
+		if player.TRounds > 0 {
+			openingFactor = (float64(player.TOK-player.TOL) / 13.0) + 1
+			playerIPR = player.TImpactPoints / float64(player.TRounds)
+			playerWPR = player.TWinPoints / float64(player.TRounds)
 
-		if player.TTeamsWinPoints != 0 {
-			player.TImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / tImpactRoundAvg)) + (0.3 * (playerWPR / (player.TTeamsWinPoints / float64(player.TWinPointsNormalizer))))
-		} else {
-			log.Debug("UH 16-0?")
-			player.TImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / tImpactRoundAvg))
+			if player.TTeamsWinPoints != 0 {
+				player.TImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / tImpactRoundAvg)) + (0.3 * (playerWPR / (player.TTeamsWinPoints / float64(player.TWinPointsNormalizer))))
+			} else {
+				log.Debug("UH 16-0?")
+				player.TImpactRating = (0.1 * float64(openingFactor)) + (0.6 * (playerIPR / tImpactRoundAvg))
+			}
+			playerDR = float64(player.TDeaths) / float64(player.TRounds)
+			playerRatingDeathComponent = 0.07 * (tDeathRoundAvg / playerDR)
+			if player.TDeaths == 0 || playerRatingDeathComponent > 0.21 {
+				playerRatingDeathComponent = 0.21
+			}
+			player.TRating = (0.3 * player.TImpactRating) + (0.35 * ((float64(player.TKills) / float64(player.TRounds)) / tKillRoundAvg)) + playerRatingDeathComponent + (0.08 * (player.TKAST / tKastRoundAvg)) + (0.2 * (player.TADR / tAdrAvg))
 		}
-		playerDR = float64(player.TDeaths) / float64(player.TRounds)
-		playerRatingDeathComponent = 0.07 * (tDeathRoundAvg / playerDR)
-		if player.TDeaths == 0 || playerRatingDeathComponent > 0.21 {
-			playerRatingDeathComponent = 0.21
-		}
-		player.TRating = (0.3 * player.TImpactRating) + (0.35 * ((float64(player.TKills) / float64(player.TRounds)) / tKillRoundAvg)) + playerRatingDeathComponent + (0.08 * (player.TKAST / tKastRoundAvg)) + (0.2 * (player.TADR / tAdrAvg))
 
 		log.Debug("openingFactor", 0.1*float64(openingFactor))
 		log.Debug("playerIPR", 0.6*(playerIPR/impactRoundAvg))
@@ -390,8 +396,6 @@ func calculateSidedStats(game *Game) {
 	game.TPlayerStats = make(map[uint64]*playerStats)
 
 	for i := len(game.Rounds) - 1; i >= 0; i-- {
-		game.Rounds[i].ServerNormalizer += game.Rounds[i].InitTerroristCount + game.Rounds[i].InitCTerroristCount
-
 		//add to round master stats
 		for steam, player := range (*game.Rounds[i]).PlayerStats {
 			//sidedStats := make(map[uint64]*playerStats)
