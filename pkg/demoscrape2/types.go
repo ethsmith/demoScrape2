@@ -153,22 +153,26 @@ type playerStats struct {
 	Rounds       int    `json:"rounds"`
 	//playerPoints float32
 	//teamPoints float32
-	Damage              int     `json:"damage"`
-	Kills               uint8   `json:"kills"`
-	Assists             uint8   `json:"assists"`
-	Deaths              uint8   `json:"deaths"`
-	DeathTick           int     `json:"deathTick"`
-	DeathPlacement      float64 `json:"deathPlacement"`
-	TicksAlive          int     `json:"ticksAlive"`
-	Trades              int     `json:"trades"`
-	Traded              int     `json:"traded"`
-	Ok                  int     `json:"ok"`
+	Damage         int     `json:"damage"`
+	Kills          uint8   `json:"kills"`
+	Assists        uint8   `json:"assists"`
+	Deaths         uint8   `json:"deaths"`
+	DeathTick      int     `json:"deathTick"`
+	DeathPlacement float64 `json:"deathPlacement"`
+	TicksAlive     int     `json:"ticksAlive"`
+	Trades         int     `json:"trades"`
+	Traded         int     `json:"traded"`
+	// opening kill
+	Ok  int `json:"ok"`
+	Aok int `json:"aok"`
+	// opening loss
 	Ol                  int     `json:"ol"`
 	Cl_1                int     `json:"cl_1"`
 	Cl_2                int     `json:"cl_2"`
 	Cl_3                int     `json:"cl_3"`
 	Cl_4                int     `json:"cl_4"`
 	Cl_5                int     `json:"cl_5"`
+	Ovol                int     `json:"ovol"`
 	TwoK                int     `json:"twoK"`
 	ThreeK              int     `json:"threeK"`
 	FourK               int     `json:"fourK"`
@@ -187,6 +191,8 @@ type playerStats struct {
 	ImpactPoints        float64 `json:"impactPoints"`
 	WinPoints           float64 `json:"winPoints"`
 	AwpKills            int     `json:"awpKills"`
+	AwpKillRounds       int     `json:"awpKillRounds"`
+	AwpMultiKillRounds  int     `json:"awpMultiKillRounds"`
 	RF                  int     `json:"RF"`
 	RA                  int     `json:"RA"`
 	NadesThrown         int     `json:"nadesThrown"`
@@ -215,9 +221,13 @@ type playerStats struct {
 	Adr          float64 `json:"adr"`
 	DrDiff       float64 `json:"drDiff"`
 	KR           float64 `json:"KR"`
+	Aokr         float64 `json:"aokr"`
+	Rawpk        float64 `json:"rawpk"`
+	Rawpmk       float64 `json:"rawpmk"`
 	Tr           float64 `json:"tr"` //trade ratio
 	ImpactRating float64 `json:"impactRating"`
 	Rating       float64 `json:"rating"`
+	Ovow         float64 `json:"ovow"`
 
 	//side specific
 	TDamage               int     `json:"TDamage"`
