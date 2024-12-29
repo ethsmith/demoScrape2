@@ -75,8 +75,10 @@ func endOfMatchProcessing(game *Game) {
 			game.TotalPlayerStats[steam].Trades += player.Trades
 			game.TotalPlayerStats[steam].Traded += player.Traded
 			game.TotalPlayerStats[steam].Ok += player.Ok
+			game.TotalPlayerStats[steam].Aok += player.Aok
 			game.TotalPlayerStats[steam].Ol += player.Ol
 			game.TotalPlayerStats[steam].KillPoints += player.KillPoints
+			game.TotalPlayerStats[steam].Ovol += player.Ovol
 			game.TotalPlayerStats[steam].Cl_1 += player.Cl_1
 			game.TotalPlayerStats[steam].Cl_2 += player.Cl_2
 			game.TotalPlayerStats[steam].Cl_3 += player.Cl_3
@@ -99,6 +101,8 @@ func endOfMatchProcessing(game *Game) {
 			game.TotalPlayerStats[steam].ImpactPoints += player.ImpactPoints
 			game.TotalPlayerStats[steam].WinPoints += player.WinPoints
 			game.TotalPlayerStats[steam].AwpKills += player.AwpKills
+			game.TotalPlayerStats[steam].AwpKillRounds += player.AwpKillRounds
+			game.TotalPlayerStats[steam].AwpMultiKillRounds += player.AwpMultiKillRounds
 			game.TotalPlayerStats[steam].RF += player.RF
 			game.TotalPlayerStats[steam].RA += player.RA
 			game.TotalPlayerStats[steam].NadesThrown += player.NadesThrown
@@ -244,6 +248,10 @@ func calculateDerivedFields(game *Game) {
 		player.DrDiff = player.Adr - (float64(player.DamageTaken) / float64(player.Rounds))
 		player.Tr = float64(player.Traded) / float64(player.Deaths)
 		player.KR = float64(player.Kills) / float64(player.Rounds)
+		player.Aokr = float64(player.Aok) / float64(player.Rounds)
+		player.Ovow = (float64(player.Cl_1) / (float64(player.Cl_1) + float64(player.Ovol))) * 100
+		player.Rawpk = float64(player.AwpKillRounds) / float64(player.Rounds)
+		player.Rawpmk = float64(player.AwpMultiKillRounds) / float64(player.Rounds)
 		player.UtilThrown = player.SmokeThrown + player.FlashThrown + player.NadesThrown + player.FiresThrown
 		player.Rws = player.Rws / float64(player.Rounds)
 
