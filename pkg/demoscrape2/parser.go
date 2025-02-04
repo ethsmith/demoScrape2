@@ -51,7 +51,6 @@ const MR = 12
 const tradeCutoff = 4 // in seconds
 var multiKillBonus = [...]float64{0, 0, 0.3, 0.7, 1.2, 2}
 var clutchBonus = [...]float64{0, 0.2, 0.6, 1.2, 2, 3}
-
 var killValues = map[string]float64{
 	"attacking":     1.2, //base values
 	"defending":     1.0,
@@ -69,13 +68,6 @@ var killValues = map[string]float64{
 	"flashAssist":   0.2,
 	"assist":        0.15,
 }
-
-type awpKillRound struct {
-	round int8
-	kills int
-}
-
-var awpKillRounds map[uint64][]awpKillRound
 
 func InitGameObject() *Game {
 	g := Game{
@@ -96,7 +88,6 @@ func InitGameObject() *Game {
 	g.Flags.RoundIntegrityEnd = -1
 	g.Flags.RoundIntegrityEndOfficial = -1
 
-	awpKillRounds = make(map[uint64][]awpKillRound)
 	return &g
 }
 
@@ -261,7 +252,6 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 				switch game.Flags.TClutchVal {
 				case 1:
 					game.PotentialRound.PlayerStats[game.Flags.TClutchSteam].Cl_1 = 1
-					game.PotentialRound.PlayerStats[game.Flags.CtClutchSteam].Ovol = 1
 				case 2:
 					game.PotentialRound.PlayerStats[game.Flags.TClutchSteam].Cl_2 = 1
 				case 3:
@@ -277,7 +267,6 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 				switch game.Flags.CtClutchVal {
 				case 1:
 					game.PotentialRound.PlayerStats[game.Flags.CtClutchSteam].Cl_1 = 1
-					game.PotentialRound.PlayerStats[game.Flags.TClutchSteam].Ovol = 1
 				case 2:
 					game.PotentialRound.PlayerStats[game.Flags.CtClutchSteam].Cl_2 = 1
 				case 3:
@@ -836,26 +825,6 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 					if e.Killer.Team == 3 {
 						pS[e.Killer.SteamID64].CtAWP += 1
 					}
-
-					if awpKillRounds[e.Killer.SteamID64] == nil {
-						awpKillRounds[e.Killer.SteamID64] = []awpKillRound{}
-					}
-
-					var roundFound = false
-					for i, akr := range awpKillRounds[e.Killer.SteamID64] {
-						if akr.round == game.PotentialRound.RoundNum {
-							if (akr.kills + 1) == 2 {
-								pS[e.Killer.SteamID64].AwpMultiKillRounds += 1
-							}
-
-							awpKillRounds[e.Killer.SteamID64][i].kills = akr.kills + 1
-							roundFound = true
-						}
-					}
-					if !roundFound {
-						awpKillRounds[e.Killer.SteamID64] = append(awpKillRounds[e.Killer.SteamID64], awpKillRound{kills: 1, round: game.PotentialRound.RoundNum})
-						pS[e.Killer.SteamID64].AwpKillRounds += 1
-					}
 				}
 				if e.IsHeadshot {
 					pS[e.Killer.SteamID64].Hs += 1
@@ -915,10 +884,6 @@ func ProcessDemo(demo io.ReadCloser) (*Game, error) {
 
 					pS[e.Killer.SteamID64].Ok = 1
 					pS[e.Victim.SteamID64].Ol = 1
-
-					if e.Weapon.Type == 309 {
-						pS[e.Killer.SteamID64].Aok = 1
-					}
 
 					if killerTeam == 2 { //T entry/opener {
 						if game.Flags.PrePlant {
